@@ -47,7 +47,7 @@ export default function RegisterPage() {
         body: JSON.stringify({ idToken }),
       });
 
-      router.push("/app");
+      router.push("/");
     } catch (err: any) {
       console.error(err);
       setError(err?.message ?? "Could not create account");
@@ -61,7 +61,7 @@ export default function RegisterPage() {
       {/* LEFT – brand side */}
       <section className="auth-left">
         <div className="auth-left-inner">
-          <h1>SpendSpectrum</h1>
+          <h1>SpendHive</h1>
           <p className="auth-tagline">
             Build a simple, realistic budget and let SpendSpectrum keep
             everything organized for you.
@@ -122,7 +122,7 @@ export default function RegisterPage() {
               }
               required
             />
-            
+
             {/* <input
               type="password"
               className="auth-input"

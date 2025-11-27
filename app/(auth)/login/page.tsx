@@ -37,7 +37,7 @@ export default function LoginPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idToken }),
       });
-      router.push("/app");
+      router.push("/");
     } catch (err: any) {
       console.error(err);
       setError(err?.message ?? "Could not sign in");
@@ -72,7 +72,7 @@ export default function LoginPage() {
       {/* LEFT SIDE – BRAND / FEATURES */}
       <section className="auth-left">
         <div className="auth-left-inner">
-          <h1>SpendSpectrum</h1>
+          <h1>SpendHive</h1>
           <p className="auth-tagline">
             Track everyday expenses, stay on top of your budget, and hit your
             savings goals — all in one simple dashboard.
