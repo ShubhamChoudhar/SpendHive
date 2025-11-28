@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { firebaseAuth } from "@/lib/firebaseClient";
 import PasswordInput from "@/app/PasswordInput";
+import Image from "next/image";
 
 import {
   BanknotesIcon,
@@ -15,6 +16,7 @@ import {
   EyeIcon,
   EyeSlashIcon,
 } from "@heroicons/react/24/outline";
+
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -61,9 +63,16 @@ export default function RegisterPage() {
       {/* LEFT – brand side */}
       <section className="auth-left">
         <div className="auth-left-inner">
-          <h1>SpendHive</h1>
+          <Image
+              src="/SpendHive.png"
+              alt="SpendHive"
+              width={200}        // tweak these two values
+              height={48}        // to match your logo aspect ratio
+              className="auth-logo"
+              priority           // logo loads fast
+          />
           <p className="auth-tagline">
-            Build a simple, realistic budget and let SpendSpectrum keep
+            Build a simple, realistic budget and let SpendHive keep
             everything organized for you.
           </p>
   
@@ -93,7 +102,7 @@ export default function RegisterPage() {
         <div className="auth-card">
           <h2>Create your account</h2>
           <p className="auth-subtitle">
-            Get started with SpendSpectrum in less than a minute.
+            Get started with SpendHive in less than a minute.
           </p>
   
           <form onSubmit={handleRegister} className="auth-form">

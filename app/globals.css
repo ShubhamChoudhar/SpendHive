@@ -443,6 +443,7 @@ body {
   font-size: 1.8rem;
   font-weight: 700;
   margin-bottom: 6px;
+  text-align: center;
 }
 
 .auth-subtitle {
@@ -549,6 +550,7 @@ body {
   justify-content: space-between;
   font-size: 0.9rem;
   color: #6b7280;
+  text-align: center;
 }
 
 .auth-links a {
@@ -585,4 +587,18 @@ body {
     margin: 0 auto;
   }
 }
+.auth-logo {
+  display: block;
+  /* margin-bottom: 24px; */
+  height: auto;
+  max-width: 200px;      /* or 220 / 240 if you want bigger */
+}
 
+.auth-page {
+  display: flex;
+  justify-content: center;   /* horizontal center */
+  align-items: center;       /* vertical center */
+  min-height: 100vh;         /* full page height */
+  background: #f3f4f6;       /* same as login bg */
+  padding: 20px;
+}

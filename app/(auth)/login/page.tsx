@@ -10,6 +10,8 @@ import {
 } from "firebase/auth";
 import { firebaseAuth } from "@/lib/firebaseClient";
 import PasswordInput from "@/app/PasswordInput";
+import Image from "next/image";
+
 
 import {
   BanknotesIcon,
@@ -72,7 +74,14 @@ export default function LoginPage() {
       {/* LEFT SIDE – BRAND / FEATURES */}
       <section className="auth-left">
         <div className="auth-left-inner">
-          <h1>SpendHive</h1>
+          <Image
+            src="/SpendHive.png"
+            alt="SpendHive"
+            width={200}        // tweak these two values
+            height={48}        // to match your logo aspect ratio
+            className="auth-logo"
+            priority           // logo loads fast
+          />
           <p className="auth-tagline">
             Track everyday expenses, stay on top of your budget, and hit your
             savings goals — all in one simple dashboard.
@@ -104,7 +113,7 @@ export default function LoginPage() {
         <div className="auth-card">
           <h2>Log in</h2>
           <p className="auth-subtitle">
-            Access your SpendSpectrum dashboard and pick up where you left off.
+            Access your SpendHive dashboard and pick up where you left off.
           </p>
   
           <button
