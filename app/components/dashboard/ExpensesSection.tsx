@@ -21,9 +21,9 @@ type ExpensesSectionProps = {
   loadingExpenses: boolean;
   expensesSorted: Expense[];
   totalExpenses: number;
-  // 🟢 single add handler prop
-  onAddExpense: (e: React.FormEvent<HTMLFormElement>) => void;
-  handleDeleteExpense: (id: number) => void;
+  // ✅ event handler props (names match usage in page.tsx)
+  onAddExpense: (e: React.FormEvent) => void;
+  onDeleteExpense: (id: number) => void;
 };
 
 export default function ExpensesSection({
@@ -40,13 +40,12 @@ export default function ExpensesSection({
   expensesSorted,
   totalExpenses,
   onAddExpense,
-  handleDeleteExpense,
+  onDeleteExpense,
 }: ExpensesSectionProps) {
   return (
     <section className="card">
       <h2>Expenses Sheet</h2>
 
-      {/* use onAddExpense here */}
       <form className="expense-form" onSubmit={onAddExpense}>
         <div className="expense-form-grid">
           <label htmlFor="category">Category:</label>
@@ -130,7 +129,7 @@ export default function ExpensesSection({
                     <button
                       type="button"
                       className="delete-btn"
-                      onClick={() => handleDeleteExpense(exp.id)}
+                      onClick={() => onDeleteExpense(exp.id)}
                     >
                       Delete
                     </button>

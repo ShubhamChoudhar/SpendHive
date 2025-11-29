@@ -415,7 +415,7 @@ export default function Home() {
           { merge: true }
         );
 
-        // 🔹 Summary document that Profile page & Navbar can read quickly
+        // Summary document
         const summaryRef = doc(firebaseDb, "users", authUser.uid);
         await setDoc(
           summaryRef,
@@ -515,7 +515,6 @@ export default function Home() {
   // ------------------ recommendations (unchanged) ------------------
   const recommendations = useMemo(() => {
     const recs: string[] = [];
-    // ... your recommendation logic here ...
     return recs.length
       ? recs
       : [
@@ -567,7 +566,6 @@ export default function Home() {
               and see personalized tips to improve your savings.
             </p>
           </div>
-          {/* could add logout or profile link here if you want */}
         </header>
 
         {/* 1. KPI Bar */}
