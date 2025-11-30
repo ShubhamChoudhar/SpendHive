@@ -515,11 +515,204 @@ export default function Home() {
   // ------------------ recommendations (unchanged) ------------------
   const recommendations = useMemo(() => {
     const recs: string[] = [];
-    return recs.length
-      ? recs
-      : [
-          "Fill in your income, savings, debts, assets, and goals to see tailored budgeting suggestions here. This is not financial advice, just simple guidance based on your numbers.",
-        ];
+  
+    // 0) Not enough data at all
+    const hasAnyMoneyData =
+      monthlyNet > 0 ||
+      monthlySavings > 0 ||
+      totalAssets > 0 ||
+      totalDebts > 0 ||
+      totalCurrentMonthSpending > 0;
+  
+    if (!hasAnyMoneyData) {
+      recs.push(
+        "Start by entering your income, savings, debts, assets, and at least a few recent expenses. Once there’s data, I’ll generate more detailed recommendations."
+      );
+      return recs;
+    }
+  
+    // 1) Emergency fund (months of expenses covered)
+    if (monthlyNet > 0) {
+      const monthsCovered = emergencyFund / monthlyNet;
+  
+      if (monthsCovered < 1) {
+        recs.push(
+          `Your emergency fund covers less than 1 month of expenses. Aim to build at least 3 months of basic living costs in cash or very liquid accounts.`
+        );
+      } else if (monthsCovered < 3) {
+        recs.push(
+          `Your emergency fund covers about ${monthsCovered.toFixed(
+            1
+          )} month(s). Gradually increase this to at least 3–6 months to handle surprises without relying on debt.`
+        );
+      } else {
+        recs.push(
+          `Your emergency fund looks solid at roughly ${monthsCovered.toFixed(
+            1
+          )} month(s) of expenses. You can start prioritizing higher-interest debt payoff or long-term investing.`
+        );
+      }
+    }
+  
+    // 2) Savings rate vs income
+    if (monthlyNet > 0) {
+      if (savingsRate < 0.1) {
+        recs.push(
+          `You’re saving less than 10% of your take-home income. Try to gradually move toward saving 15–20% by trimming small recurring expenses or increasing your income.`
+        );
+      } else if (savingsRate < 0.2) {
+        recs.push(
+          `You’re saving around ${(savingsRate * 100).toFixed(
+            1
+          )}% of your take-home income. That’s a good start — see if you can push this closer to 20% over time.`
+        );
+      } else {
+        recs.push(
+          `You’re saving roughly ${(savingsRate * 100).toFixed(
+            1
+          )}% of your take-home income. That’s strong — consider directing extra savings into long-term investments or specific goals (house, retirement, education).`
+        );
+      }
+    }
+  
+    // 3) 50/30/20 rule analysis
+    if (monthlyNet > 0 && totalCurrentMonthSpending > 0) {
+      const needsOk = needsPercentOfIncome <= 55;
+      const wantsOk = wantsPercentOfIncome <= 35;
+      const savingsOk = savingsPercentOfIncome >= 15;
+  
+      if (!needsOk) {
+        recs.push(
+          `Your “needs” (fixed bills) are taking about ${needsPercentOfIncome.toFixed(
+            1
+          )}% of your income. See if you can renegotiate large bills (rent, insurance, subscriptions) or reduce fixed commitments over time.`
+        );
+      }
+      if (!wantsOk) {
+        recs.push(
+          `Your “wants” (variable / lifestyle spending) are around ${wantsPercentOfIncome.toFixed(
+            1
+          )}% of income. Track categories like dining out, entertainment, and shopping — even a 5–10% reduction can free up meaningful savings.`
+        );
+      }
+      if (!savingsOk) {
+        recs.push(
+          `Your savings rate is about ${savingsPercentOfIncome.toFixed(
+            1
+          )}% of income. Aim to get closer to 20% over time by shifting a bit from wants into automatic savings or investments.`
+        );
+      }
+      if (needsOk && wantsOk && savingsOk) {
+        recs.push(
+          `Your spending mix is roughly aligned with the 50/30/20 guideline (needs/wants/savings). Keep monitoring each month so this balance stays intentional.`
+        );
+      }
+    }
+  
+    // 4) Debt vs assets & net worth
+    if (totalDebts > 0) {
+      const debtToAssets = totalAssets > 0 ? totalDebts / totalAssets : Infinity;
+  
+      if (debtToAssets === Infinity || debtToAssets > 1.2) {
+        recs.push(
+          `Your total debts are high relative to your assets. Focus on a debt payoff plan, starting with high-interest debts (especially credit cards) while maintaining a small emergency buffer.`
+        );
+      } else if (debtToAssets > 0.5) {
+        recs.push(
+          `Your debt-to-asset ratio is moderate. Consider making slightly larger payments on high-interest debts to reduce interest costs while still contributing to savings and investments.`
+        );
+      } else {
+        recs.push(
+          `Your debts look manageable relative to your assets. Keep payments consistent and avoid adding new high-interest debt.`
+        );
+      }
+  
+      if (netWorth < 0) {
+        recs.push(
+          `Your net worth is currently negative, which is common early on. The key levers are: paying down high-interest debt, building an emergency fund, and steadily growing investments.`
+        );
+      }
+    } else if (totalAssets > 0) {
+      recs.push(
+        `You have assets but little or no debt, which is a strong position. Focus on aligning your investments with your risk tolerance and long-term goals.`
+      );
+    }
+  
+    // 5) Retirement goal vs projection
+    if (retirementTargetAmount > 0 && retirementYearsFromNow > 0) {
+      const coverage =
+        retirementTargetAmount > 0
+          ? projectedRetirementFV / retirementTargetAmount
+          : 0;
+  
+      if (coverage < 0.6) {
+        recs.push(
+          `At your current monthly savings and expected return, you may reach about ${(coverage *
+            100).toFixed(
+            0
+          )}% of your retirement target. Consider increasing monthly retirement contributions or extending your time horizon.`
+        );
+      } else if (coverage < 1) {
+        recs.push(
+          `You’re on track for roughly ${(coverage * 100).toFixed(
+            0
+          )}% of your retirement goal. Small increases in contributions or slightly higher returns could close the gap.`
+        );
+      } else {
+        recs.push(
+          `Your current savings plan could fully cover (or exceed) your retirement target, assuming returns stay near your expected rate. Periodically review your assumptions and risk level.`
+        );
+      }
+    }
+  
+    // 6) House goal
+    if (houseGoalAmount > 0 && houseGoalYears > 0) {
+      const coverage =
+        houseGoalAmount > 0 ? projectedHouseFV / houseGoalAmount : 0;
+  
+      if (coverage < 0.6) {
+        recs.push(
+          `Your house-down-payment goal may be underfunded at the current monthly amount. Consider increasing contributions or adjusting the target price/timeline.`
+        );
+      } else if (coverage < 1) {
+        recs.push(
+          `You’re on a reasonable path toward your house goal, but there’s a small gap. A modest boost in monthly investing or a slightly longer timeline could close it.`
+        );
+      } else {
+        recs.push(
+          `You’re on track (or ahead) for your house goal based on your current plan. Make sure this money is kept in an appropriate mix of safe vs growth assets given your timeline.`
+        );
+      }
+    }
+  
+    // 7) Education goal
+    if (educationGoalAmount > 0 && educationGoalYears > 0) {
+      const coverage =
+        educationGoalAmount > 0 ? projectedEducationFV / educationGoalAmount : 0;
+  
+      if (coverage < 0.6) {
+        recs.push(
+          `Your education goal is currently underfunded. Consider increasing monthly contributions or exploring scholarships/alternative funding to reduce the future burden.`
+        );
+      } else if (coverage < 1) {
+        recs.push(
+          `You’re part-way to your education goal. A slight increase in monthly investing or a longer horizon could help fully fund it.`
+        );
+      } else {
+        recs.push(
+          `You appear to be on track (or ahead) for your education goal. Continue monitoring contributions as tuition expectations change over time.`
+        );
+      }
+    }
+  
+    // 8) Fallback if somehow nothing fired
+    if (recs.length === 0) {
+      recs.push(
+        "Your numbers look fairly balanced. Keep tracking them monthly so you can spot trends early and adjust savings, debt payoff, and investing as your goals evolve."
+      );
+    }
+  
+    return recs;
   }, [
     monthlyNet,
     monthlySavings,
@@ -528,31 +721,22 @@ export default function Home() {
     recommendedEmergencyFund,
     totalDebts,
     totalAssets,
-    debts,
+    netWorth,
+    totalCurrentMonthSpending,
+    needsPercentOfIncome,
+    wantsPercentOfIncome,
+    savingsPercentOfIncome,
     retirementTargetAmount,
     retirementYearsFromNow,
-    expectedAnnualReturnRate,
-    requiredMonthlyRetirement,
     projectedRetirementFV,
+    expectedAnnualReturnRate,
     houseGoalAmount,
     houseGoalYears,
-    requiredMonthlyHouse,
     projectedHouseFV,
     educationGoalAmount,
     educationGoalYears,
-    requiredMonthlyEducation,
     projectedEducationFV,
-    monthlyInvestForGoals,
-    totalCurrentMonthSpending,
-    fixedSpending,
-    variableSpending,
-    needsMax,
-    wantsMax,
-    savingsMin,
-    investing.riskTolerance,
-    goals.vacation,
-    goals.holidays,
-  ]);
+  ]);  
 
   // ------------------ JSX ------------------
   return (
