@@ -48,7 +48,7 @@ export default function LoginPage() {
 
       router.push("/");
     } catch (err: any) {
-      console.error(err);
+      // console.error(err);
       const code = (err as FirebaseError)?.code;
 
       if (code === "auth/user-not-found") {

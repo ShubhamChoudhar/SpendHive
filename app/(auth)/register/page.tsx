@@ -12,6 +12,7 @@ import {
 import { firebaseAuth } from "@/lib/firebaseClient";
 import PasswordInput from "@/app/PasswordInput";
 import Image from "next/image";
+import type { FirebaseError } from "firebase/app";
 
 import {
   BanknotesIcon,
@@ -55,8 +56,15 @@ export default function RegisterPage() {
 
       router.push("/");
     } catch (err: any) {
-      console.error(err);
-      setError(err?.message ?? "Could not create account");
+      const code = (err as FirebaseError)?.code;
+
+      if (code === "auth/email-already-in-use") {
+        setError("An account already exists with this email address.");
+      } else{
+        setError("Could not create account.");
+      }
+      // console.error(err);
+      // setError(err?.message ?? "Could not create account");
     } finally {
       setLoading(false);
     }
@@ -80,7 +88,7 @@ export default function RegisterPage() {
 
       router.push("/");
     } catch (err: any) {
-      console.error(err);
+      // console.error(err);
       setError(err?.message ?? "Could not sign up with Google");
     } finally {
       setLoading(false);
